@@ -6,26 +6,26 @@ library("bamlss")
 
 df <- read_csv("0_data/t2m_merged_forecast_with_obs_short.csv")
 
-df <- df %>% 
+df <- df %>%
   drop_na() %>%
   mutate(
     lead_time = as.numeric(difftime(prediction_time, issue_time, units = "hours")),
     doy = as.numeric(difftime(prediction_time, make_date(year(prediction_time), 1, 1), units = "days")),
-    doy_sin = sin(2*pi*doy/366),
-    doy_cos = cos(2*pi*doy/366),
+    doy_sin = sin(2 * pi * doy / 366),
+    doy_cos = cos(2 * pi * doy / 366),
     tod = as.factor(doy - floor(doy)),
     log_ensemble_sd = log(ensemble_sd)
   ) %>%
   dplyr::select(
     location, issue_time, lead_time, forecast_period, prediction_time, doy, observation, ensemble_mean, ensemble_sd, doy_sin, doy_cos, tod, log_ensemble_sd
-  ) %>% 
+  ) %>%
   rename(valid_time = prediction_time) %>%
   distinct()
 
 df <- df %>% filter(location == 20)
 
 df <- df %>%
-  arrange(issue_time, lead_time) 
+  arrange(issue_time, lead_time)
 
 
 source("3_helpers_t2m.R")
@@ -41,38 +41,32 @@ doParallel::registerDoParallel(cl = my.cluster)
 foreach::getDoParRegistered()
 
 
-# Lead time separated model 
+# Lead time separated model
 results_separated <- foreach(
   issue_time_prediction = unique(df$issue_time),
   .packages = c("tidyverse", "crch"),
   .errorhandling = "remove"
 ) %dopar% {
-  
-  
   predictions <- list()
   training_window_lengths <- c(5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80)
-  
-  for(i in 1:length(training_window_lengths)){
-    
+
+  for (i in 1:length(training_window_lengths)) {
     training_window_length <- training_window_lengths[i]
-    
+
     # Get train and testing dataset
     train <- .get_train(df, issue_time_prediction, training_window_length) %>% filter(lead_time == 48)
     test <- .get_test(df, issue_time_prediction) %>% filter(lead_time == 48)
-    
+
     # Check if we are not within the first training_window_length days
     if (nrow(train) >= training_window_length) {
-      
       predictions_one_window_length <- .train_and_predict_ngr(train, test)
       predictions_one_window_length$training_window_length <- training_window_length
       predictions[[i]] <- predictions_one_window_length
-      
     }
   }
-  
+
   bind_rows(predictions)
-  
-}  
+}
 
 
 # Lead time continuous model 1
@@ -81,12 +75,10 @@ results_continuous <- foreach(
   .packages = c("tidyverse", "crch", "bamlss"),
   .errorhandling = "remove"
 ) %dopar% {
-  
   predictions <- list()
   training_window_lengths <- c(5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80)
-  
-  for(i in 1:length(training_window_lengths)){
-    
+
+  for (i in 1:length(training_window_lengths)) {
     training_window_length <- training_window_lengths[i]
 
     predictions_one_window_length <- .predict_lead_time_continuous_one_issue_date_crps(
@@ -96,13 +88,11 @@ results_continuous <- foreach(
       training_window_length = training_window_length
     )
     predictions_one_window_length$training_window_length <- training_window_length
-    
+
     predictions[[i]] <- predictions_one_window_length
-    
   }
-  
+
   bind_rows(predictions)
-  
 }
 
 # Lead time continuous model 1 -- Staggered window
@@ -111,14 +101,12 @@ results_continuous_staggered <- foreach(
   .packages = c("tidyverse", "crch", "bamlss"),
   .errorhandling = "remove"
 ) %dopar% {
-  
   predictions <- list()
   training_window_lengths <- c(5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80)
-  
-  for(i in 1:length(training_window_lengths)){
-    
+
+  for (i in 1:length(training_window_lengths)) {
     training_window_length <- training_window_lengths[i]
-    
+
     predictions_one_window_length <- .predict_lead_time_continuous_one_issue_date_crps(
       issue_time_prediction,
       df = df,
@@ -127,13 +115,11 @@ results_continuous_staggered <- foreach(
       train_mode = "staggered"
     )
     predictions_one_window_length$training_window_length <- training_window_length
-    
+
     predictions[[i]] <- predictions_one_window_length
-    
   }
-  
+
   bind_rows(predictions)
-  
 }
 
 results_separated <- bind_rows(results_separated)
@@ -144,13 +130,17 @@ results_separated <- results_separated %>% rename(predicted_mu_lead_time_separat
 results_continuous <- results_continuous %>% rename(predicted_mu_lead_time_continuous_model = predicted_mu, predicted_sigma_lead_time_continuous_model = predicted_sigma)
 results_continuous_staggered <- results_continuous_staggered %>% rename(predicted_mu_lead_time_continuous_model_staggered = predicted_mu, predicted_sigma_lead_time_continuous_model_staggered = predicted_sigma)
 
-results <- results_separated %>% left_join(
-  results_continuous %>% dplyr::select(c(issue_time, lead_time, forecast_period, valid_time, training_window_length, starts_with("predicted"))), by = c("issue_time", "lead_time", "forecast_period", "valid_time", "training_window_length")
-) %>% left_join(
-  results_continuous_staggered %>% dplyr::select(c(issue_time, lead_time, forecast_period, valid_time, training_window_length, starts_with("predicted"))), by = c("issue_time", "lead_time", "forecast_period", "valid_time", "training_window_length")
-)
+results <- results_separated %>%
+  left_join(
+    results_continuous %>% dplyr::select(c(issue_time, lead_time, forecast_period, valid_time, training_window_length, starts_with("predicted"))),
+    by = c("issue_time", "lead_time", "forecast_period", "valid_time", "training_window_length")
+  ) %>%
+  left_join(
+    results_continuous_staggered %>% dplyr::select(c(issue_time, lead_time, forecast_period, valid_time, training_window_length, starts_with("predicted"))),
+    by = c("issue_time", "lead_time", "forecast_period", "valid_time", "training_window_length")
+  )
 
-results <- results %>% 
+results <- results %>%
   drop_na() %>%
   pivot_longer(starts_with("predicted_"), names_to = c("type", "model"), values_to = "value", names_sep = "_lead_time_") %>%
   pivot_wider(names_from = "type", values_from = "value") %>%
@@ -163,7 +153,7 @@ results <- results %>%
     )
   )
 
-library ("scoringRules")
+library("scoringRules")
 
 results <- results %>%
   mutate(
@@ -181,7 +171,7 @@ results <- read_csv("1_generated_data/3_running_window_optimal_training_window_s
 
 
 # Plot CRPS of predictions
-p1 <- results %>% 
+p1 <- results %>%
   group_by(training_window_length, model) %>%
   summarise(CRPS = mean(CRPS), .groups = "drop") %>%
   filter(training_window_length > 5, model != "Lead time continuous model -- Staggered window") %>%
@@ -197,15 +187,16 @@ p1 <- results %>%
       "Lead time separated \n(S-RWIN)" = "#000000",
       "Lead time continuous \n(C-RWIN)" = "#E69F00",
       "Lead time continuous model -- Staggered window" = "#56B4E9"
-    )) +
-  geom_line() + 
+    )
+  ) +
+  geom_line() +
   geom_point() +
-  theme_classic() + 
-  ylab("CRPS for 48h predictions") + 
-  xlab("Training window size") + 
+  theme_classic() +
+  ylab("CRPS for 48h predictions") +
+  xlab("Training window size") +
   scale_x_continuous(breaks = c(10, 20, 30, 40, 50, 60, 70, 80)) +
-  ggtitle(TeX("CRPS for 48h predictions as a function of the training window size")) + 
-  theme(axis.text=element_text(size=14),axis.title=element_text(size=14), plot.title = element_text(size = 14))
+  ggtitle(TeX("CRPS for 48h predictions as a function of the training window size")) +
+  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14))
 p1
 ggsave("2_generated_plots/3_running_window/t2m_dependence_on_training_window_size.png", width = 7, height = 5)
 
@@ -218,14 +209,12 @@ results <- foreach(
   .packages = c("tidyverse", "bamlss"),
   .errorhandling = "remove"
 ) %dopar% {
-  
   predictions <- list()
   training_window_lengths <- c(5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80)
-  
-  for(i in 1:length(training_window_lengths)){
-    
+
+  for (i in 1:length(training_window_lengths)) {
     training_window_length <- training_window_lengths[i]
-    
+
     predictions_one_window_length <- .predict_lead_time_continuous_one_issue_date(
       issue_time_prediction,
       df = df,
@@ -233,13 +222,11 @@ results <- foreach(
       training_window_length = training_window_length
     )
     predictions_one_window_length$training_window_length <- training_window_length
-    
+
     predictions[[i]] <- predictions_one_window_length
-    
   }
-  
+
   bind_rows(predictions)
-  
 }
 
 results <- bind_rows(results) %>% drop_na()
@@ -253,9 +240,10 @@ test <- results %>%
   group_by(training_window_length, lead_time) %>%
   summarise(CRPS = mean(CRPS), .groups = "drop") %>%
   group_by(lead_time) %>%
-  summarise(optimal_training_window = training_window_length[CRPS == min(CRPS)], min_CRPS = min(CRPS), .groups = "drop") 
+  summarise(optimal_training_window = training_window_length[CRPS == min(CRPS)], min_CRPS = min(CRPS), .groups = "drop")
 
-test %>% ggplot(aes(lead_time, optimal_training_window)) + geom_line()
+test %>% ggplot(aes(lead_time, optimal_training_window)) +
+  geom_line()
 
 
 # CRPS with optimal training window size
@@ -270,9 +258,8 @@ results_separated <- foreach(
     df = df,
     training_window_length = 40
   )
-  
+
   predictions
-  
 }
 
 results_continuous_1 <- foreach(
@@ -286,7 +273,7 @@ results_continuous_1 <- foreach(
     formula = list(observation ~ ensemble_mean + factor(tod) + lead_time, sigma ~ log_ensemble_sd + lead_time + factor(tod)),
     training_window_length = 25
   )
-  
+
   predictions
 }
 
@@ -301,7 +288,7 @@ results_continuous_2 <- foreach(
     formula = list(observation ~ ensemble_mean + factor(tod) + lead_time, sigma ~ log_ensemble_sd + lead_time + factor(tod)),
     training_window_length = 40
   )
-  
+
   predictions
 }
 
@@ -313,11 +300,15 @@ results_separated <- results_separated %>% rename(predicted_mu_lead_time_separat
 results_continuous_1 <- results_continuous_1 %>% rename(predicted_mu_lead_time_continuous_1 = predicted_mu, predicted_sigma_lead_time_continuous_1 = predicted_sigma)
 results_continuous_2 <- results_continuous_2 %>% rename(predicted_mu_lead_time_continuous_2 = predicted_mu, predicted_sigma_lead_time_continuous_2 = predicted_sigma)
 
-results <- results_separated %>% left_join(
-  results_continuous_1 %>% dplyr::select(c(issue_time, lead_time, forecast_period, valid_time, starts_with("predicted"))), by = c("issue_time", "lead_time", "forecast_period", "valid_time")
-) %>% left_join(
-  results_continuous_2 %>% dplyr::select(c(issue_time, lead_time, forecast_period, valid_time, starts_with("predicted"))), by = c("issue_time", "lead_time", "forecast_period", "valid_time")
-) %>% 
+results <- results_separated %>%
+  left_join(
+    results_continuous_1 %>% dplyr::select(c(issue_time, lead_time, forecast_period, valid_time, starts_with("predicted"))),
+    by = c("issue_time", "lead_time", "forecast_period", "valid_time")
+  ) %>%
+  left_join(
+    results_continuous_2 %>% dplyr::select(c(issue_time, lead_time, forecast_period, valid_time, starts_with("predicted"))),
+    by = c("issue_time", "lead_time", "forecast_period", "valid_time")
+  ) %>%
   drop_na() %>%
   pivot_longer(starts_with("predicted_"), names_to = c("type", "model"), values_to = "value", names_sep = "_lead_time_") %>%
   pivot_wider(names_from = "type", values_from = "value") %>%
@@ -337,7 +328,7 @@ results <- results_separated %>% left_join(
 
 
 # Plot CRPS score of predictions
-results %>% 
+results %>%
   group_by(lead_time, model) %>%
   summarise(CRPS = mean(CRPS), .groups = "drop") %>%
   ggplot(aes(lead_time, CRPS, colour = model)) +
@@ -346,11 +337,12 @@ results %>%
       "Lead time separated EMOS" = "#000000",
       "Lead time continuous model -- Optimal window" = "#E69F00",
       "Lead time continuous model -- 40 days" = "#56B4E9"
-    )) +
-  geom_line(linewidth = 1.2) + 
+    )
+  ) +
+  geom_line(linewidth = 1.2) +
   geom_point() +
-  theme_classic() + 
-  ylab("CRPS score") + 
-  xlab("Lead time") + 
-  ggtitle(TeX("CRPS score as a function of the lead time")) + 
-  theme(axis.text=element_text(size=14),axis.title=element_text(size=14), plot.title = element_text(size = 14,hjust = 0.5))
+  theme_classic() +
+  ylab("CRPS score") +
+  xlab("Lead time") +
+  ggtitle(TeX("CRPS score as a function of the lead time")) +
+  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))

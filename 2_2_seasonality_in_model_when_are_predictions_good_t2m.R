@@ -7,19 +7,19 @@ library("gamlss")
 
 df <- read_csv("0_data/t2m_merged_forecast_with_obs_medium.csv")
 
-df <- df %>% 
+df <- df %>%
   drop_na() %>%
   mutate(
     lead_time = as.numeric(difftime(prediction_time, issue_time, units = "hours")),
     doy = as.numeric(difftime(prediction_time, make_date(year(prediction_time), 1, 1), units = "days")),
-    doy_sin = sin(2*pi*doy/366),
-    doy_cos = cos(2*pi*doy/366),
+    doy_sin = sin(2 * pi * doy / 366),
+    doy_cos = cos(2 * pi * doy / 366),
     tod = as.factor(doy - floor(doy)),
     log_ensemble_sd = log(ensemble_sd)
   ) %>%
   dplyr::select(
     location, issue_time, lead_time, forecast_period, prediction_time, doy, observation, ensemble_mean, ensemble_sd, doy_sin, doy_cos, tod, log_ensemble_sd
-  ) %>% 
+  ) %>%
   distinct()
 
 # Training data
@@ -40,38 +40,36 @@ predictions_lead_time_separated <- list()
 predictions_other_lead_times <- list()
 
 start <- Sys.time()
-for(location_i in unique(train$location)){
-  
+for (location_i in unique(train$location)) {
   predictions_one_location <- list()
-  
+
   print(paste0("------ Location ", location_i, " ------"))
-  
+
   test_df_loc <- test %>% filter(location == location_i)
-  
-  for(lead_time_i in unique(train$lead_time)){
-    
+
+  for (lead_time_i in unique(train$lead_time)) {
     # Get train and test df location, lead time
     train_df <- train %>% filter(lead_time == lead_time_i, location == location_i)
     test_df <- test %>% filter(lead_time == lead_time_i, location == location_i)
-    
+
     # Fit model
     fit <- crch(
       observation ~ ensemble_mean + doy_sin + doy_cos | log(ensemble_sd) + doy_sin + doy_cos,
       data = train_df,
       dist = "gaussian",
-      type = "crps", 
+      type = "crps",
       link.scale = "log"
     )
-    
+
     # Predict on full test dataset for location
-    test_df_loc <- test_df_loc %>% mutate(!!as.symbol(paste0("crps", lead_time_i)) := predict(fit, newdata = test_df_loc,  at = test_df_loc$observation, type = "crps"))
+    test_df_loc <- test_df_loc %>% mutate(!!as.symbol(paste0("crps", lead_time_i)) := predict(fit, newdata = test_df_loc, at = test_df_loc$observation, type = "crps"))
 
     # Predict at lead time separated test df
-    test_df$crps <- predict(fit, newdata = test_df,  at = test_df$observation, type = "crps")
+    test_df$crps <- predict(fit, newdata = test_df, at = test_df$observation, type = "crps")
 
     predictions_one_location[[as.character(lead_time_i)]] <- test_df
   }
-  
+
   predictions_lead_time_separated[[as.character(location_i)]] <- bind_rows(predictions_one_location)
   predictions_other_lead_times[[as.character(location_i)]] <- test_df_loc
 }
@@ -86,13 +84,13 @@ predictions_other_lead_times <- bind_rows(predictions_other_lead_times)
 # 2. Evaluate predictions and plot ----------------------------------------
 
 # Get CRPS scores of models trained for t1 evaluated at t2
-crps_trained_for_different_lead_time <- predictions_other_lead_times %>% 
+crps_trained_for_different_lead_time <- predictions_other_lead_times %>%
   pivot_longer(contains("crps"), names_to = "type", values_to = "crps") %>%
   group_by(lead_time, type) %>%
   summarise(crps = mean(crps), .groups = "drop")
 
 # Get baseline (model trained for lead time t1, evaluated at t1)
-crps_baseline <- predictions_lead_time_separated %>% 
+crps_baseline <- predictions_lead_time_separated %>%
   group_by(lead_time) %>%
   summarise(crps = mean(crps), .groups = "drop") %>%
   dplyr::rename(baseline_crps = crps)
@@ -104,37 +102,36 @@ crps %>% write_csv("1_generated_data/2_seasonality_in_model_predictions_differen
 # Read from file
 crps <- read_csv("1_generated_data/2_seasonality_in_model_predictions_different_lead_times_t2m.csv")
 
-crps <- crps %>% 
+crps <- crps %>%
   mutate(type = as.numeric(gsub("crps", "", type))) %>%
   dplyr::rename(trained_for = type)
 
 # Merge to and group by tod
 tod_and_lead_time <- train %>% distinct(lead_time, tod)
-levels(tod_and_lead_time$tod) <-  c("00 UTC", "06 UTC", "12 UTC", "18 UTC")
+levels(tod_and_lead_time$tod) <- c("00 UTC", "06 UTC", "12 UTC", "18 UTC")
 
-crps <- crps %>% 
+crps <- crps %>%
   left_join(tod_and_lead_time, by = "lead_time") %>%
   left_join(tod_and_lead_time %>% dplyr::rename(tod_trained_for = tod), by = c("trained_for" = "lead_time"))
 
 # Plot
-library("viridis") 
+library("viridis")
 crps %>%
   filter(tod == tod_trained_for) %>%
-  mutate(skill_score = 1-crps/baseline_crps) %>%
+  mutate(skill_score = 1 - crps / baseline_crps) %>%
   group_by(tod, lead_time) %>%
   arrange(trained_for, .by_group = TRUE) %>%
   mutate(elem_in_group = row_number() - 1) %>%
   ungroup() %>%
   filter(elem_in_group < 8) %>%
-  ggplot(aes(lead_time, skill_score, col = factor(elem_in_group))) + 
-  geom_line(linewidth = 1.2) + 
+  ggplot(aes(lead_time, skill_score, col = factor(elem_in_group))) +
+  geom_line(linewidth = 1.2) +
   facet_wrap(~tod_trained_for) +
-  scale_color_viridis(name = "Model number", discrete = TRUE, option = "D")+
-  theme_classic() + 
-  ylab("CRPSS") + 
-  xlab("Lead time (hours)") + 
-  scale_x_continuous(breaks = 24*c(0:8)) + 
-  ggtitle(TeX("CRPSS as a function of lead time for nth model of each time of day")) + 
-  theme(axis.text=element_text(size=14),axis.title=element_text(size=14), plot.title = element_text(size = 14,hjust = 0.5))
+  scale_color_viridis(name = "Model number", discrete = TRUE, option = "D") +
+  theme_classic() +
+  ylab("CRPSS") +
+  xlab("Lead time (hours)") +
+  scale_x_continuous(breaks = 24 * c(0:8)) +
+  ggtitle(TeX("CRPSS as a function of lead time for nth model of each time of day")) +
+  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
 ggsave("2_generated_plots/2_seasonality_in_model/t2m_crps_score_nth_model_by_tod.png", width = 9, height = 6.5)
-
