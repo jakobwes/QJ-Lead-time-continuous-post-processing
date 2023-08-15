@@ -105,7 +105,7 @@ p2 <- model_parameters %>%
   geom_line() +
   geom_smooth(method = lm, se = FALSE, linetype = "dashed", color = "darkred") +
   theme_classic() +
-  ylab(TeX("$\\beta-t$")) +
+  ylab(TeX("$\\beta_t$")) +
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
   ggtitle(TeX("$\\beta_t$ as a function of lead time")) +

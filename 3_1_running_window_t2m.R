@@ -337,7 +337,6 @@ p1 <- results %>%
   theme_classic() +
   ylab("CRPS") +
   xlab("Lead time (hours)") +
-  ggtitle(TeX("CRPS as a function of the lead time")) +
   scale_x_continuous(breaks = 24 * c(0:8)) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
 p1
@@ -356,9 +355,8 @@ results %>%
   geom_hline(yintercept = 1, linetype = "dashed", color = "red", linewidth = 1.0) +
   facet_wrap(~model) +
   theme_classic() +
-  ggtitle(TeX("PIT histogram at a lead time 48 hours")) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5), axis.text.y = element_blank(), axis.ticks.y = element_blank())
-ggsave("2_generated_plots/3_running_window/t2m_rolling_window_PIT_lead_time_48_lead_time_continuous_and_separated_models.png", width = 10, height = 5)
+ggsave("2_generated_plots/3_running_window/t2m_rolling_window_PIT_lead_time_48.png", width = 10, height = 5)
 
 # RI diff
 get_reliability_index <- function(x) {
@@ -386,6 +384,5 @@ results %>%
   scale_x_continuous(breaks = 24 * c(0:8)) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
   ylab("RI (lead time continuous) - RI(lead time separated)") +
-  xlab("Lead time (hours)") +
-  ggtitle("Difference in reliability index")
+  xlab("Lead time (hours)")
 ggsave("2_generated_plots/3_running_window/t2m_rolling_window_RI_diff_continuous_and_separated_models.png", width = 10, height = 5)

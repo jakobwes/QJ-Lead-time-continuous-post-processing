@@ -85,7 +85,6 @@ results %>%
   theme_classic() +
   ylab("CRPS") +
   xlab("Lead time (hours)") +
-  ggtitle(TeX("CRPS as a function of the lead time")) +
   scale_x_continuous(breaks = 24 * c(0:8)) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
 ggsave("2_generated_plots/4_comparison/crps_combined_t2m.png", width = 7, height = 5)
@@ -107,7 +106,6 @@ results %>%
   theme_classic() +
   ylab("CRPS score") +
   xlab("Lead time (hours)") +
-  ggtitle(TeX("CRPS score as a function of the lead time")) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
   facet_wrap(~location)
 # ggsave("2_generated_plots/4_comparison/crps_combined_by_location_t2m.png", width = 7, height = 5)
@@ -332,7 +330,6 @@ results %>%
   theme_classic() +
   ylab("CRPS") +
   xlab("Lead time (hours)") +
-  ggtitle(TeX("CRPS as a function of the lead time")) +
   scale_x_continuous(breaks = 24 * c(0:8)) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
 ggsave("2_generated_plots/4_comparison/crps_combined_wind_speed.png", width = 7, height = 5)
@@ -354,7 +351,6 @@ results %>%
   theme_classic() +
   ylab("CRPS score") +
   xlab("Lead time (hours)") +
-  ggtitle(TeX("CRPS score as a function of the lead time")) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
   facet_wrap(~location)
 # ggsave("2_generated_plots/4_comparison/crps_combined_by_location_wind_speed.png", width = 7, height = 5)
@@ -523,7 +519,6 @@ results_twcrps %>%
   ylab("twCRPSS") +
   theme_classic() +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
-  ggtitle("twCRPSS as a function of lead time") +
   xlab("Lead time (hours") +
   facet_wrap(~lead_time)
 
@@ -543,6 +538,5 @@ results_twcrps %>%
   scale_linetype_manual(name = "Seasonality", values = c("Seasonality in Model (-SWM)" = "solid", "Running window (-RWIN)" = "dotdash")) +
   theme_classic() +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
-  ggtitle("twCRPSS as a function of the threshold") +
   xlab("Threshold t (m/s)")
 ggsave("2_generated_plots/4_comparison/twcrps_wind_speed.png", width = 7, height = 5)

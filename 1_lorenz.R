@@ -229,7 +229,6 @@ p6 <- predictions_test %>%
   ylab("CRPS") +
   xlab("Lead time (days)") +
   scale_colour_discrete(name = "EMOS model") +
-  ggtitle(TeX("CRPS as a function of the lead time")) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
 ggsave("2_generated_plots/1_lorenz/lorenz_crps_score_lead_time_continuous_and_separated_models.png", p6, width = 7, height = 5)
 
@@ -255,7 +254,6 @@ p7 <- predictions_test %>%
   geom_hline(yintercept = 1, linetype = "dashed", color = "red", linewidth = 1.0) +
   facet_wrap(~type) +
   theme_classic() +
-  ggtitle(TeX("PIT histogram at a lead time 5 days")) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5), axis.text.y = element_blank(), axis.ticks.y = element_blank())
 p7
 ggsave("2_generated_plots/1_lorenz/lorenz_PIT_lead_time_5.png", p7, width = 10, height = 5)
