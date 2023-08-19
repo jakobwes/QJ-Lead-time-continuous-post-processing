@@ -195,7 +195,6 @@ p1 <- results %>%
   ylab("CRPS for 48h predictions") +
   xlab("Training window size") +
   scale_x_continuous(breaks = c(10, 20, 30, 40, 50, 60, 70, 80)) +
-  ggtitle(TeX("CRPS for 48h predictions as a function of the training window size")) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14))
 p1
 ggsave("2_generated_plots/3_running_window/t2m_dependence_on_training_window_size.png", width = 7, height = 5)

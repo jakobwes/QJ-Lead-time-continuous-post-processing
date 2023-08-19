@@ -47,9 +47,16 @@ lead_times <- unique(train$lead_time)
 # Get model parameters
 model_parameters <- data.frame(lead_time = lead_times)
 model_parameters$mu_intercept <- 0
+model_parameters$mu_intercept_sd <- 0
+
 model_parameters$mu_mult <- 0
+model_parameters$mu_mult_sd <- 0
+
 model_parameters$sigma_intercept <- 0
+model_parameters$sigma_intercept_sd <- 0
+
 model_parameters$sigma_mult <- 0
+model_parameters$sigma_intercept_sd <- 0
 
 
 for (i in 1:length(lead_times)) {
@@ -71,9 +78,17 @@ for (i in 1:length(lead_times)) {
 
   # Get parameters
   model_parameters$mu_intercept[i] <- coef(fit, "location")["(Intercept)"]
+  model_parameters$mu_intercept_sd[i] <- summary(fit)$coefficients$location[1,2]
+
   model_parameters$mu_mult[i] <- coef(fit, "location")["ensemble_mean"]
+  model_parameters$mu_mult_sd[i] <- summary(fit)$coefficients$location[2,2]
+  
   model_parameters$sigma_intercept[i] <- coef(fit, "scale")["(Intercept)"]
+  model_parameters$sigma_intercept_sd[i] <- summary(fit)$coefficients$scale[1,2]
+  
   model_parameters$sigma_mult[i] <- coef(fit, "scale")["log(ensemble_sd)"]
+  model_parameters$sigma_mult_sd[i] <- summary(fit)$coefficients$scale[2,2]
+  
 }
 
 end <- Sys.time()
@@ -83,12 +98,11 @@ predictions_lead_time_separated <- bind_rows(predictions_lead_time_separated)
 
 # Visualize parameters: alpha
 p1 <- model_parameters %>%
-  pivot_longer(c(mu_intercept, mu_mult, sigma_intercept, sigma_mult), names_to = "type", values_to = "vals") %>%
-  filter(type == "mu_intercept") %>%
-  ggplot(aes(lead_time, vals)) +
+  ggplot(aes(lead_time, mu_intercept)) +
   geom_point() +
   geom_line() +
   geom_smooth(method = lm, se = FALSE, linetype = "dashed", color = "darkred") +
+  geom_ribbon(aes(lead_time, ymin = mu_intercept - 2*mu_intercept_sd, ymax = mu_intercept + 2*mu_intercept_sd), alpha = 0.3) +
   theme_classic() +
   ylab(TeX("$\\alpha_t$")) +
   xlab("Lead time (hours)") +
@@ -98,14 +112,13 @@ p1 <- model_parameters %>%
 
 # Visualize parameters: beta
 p2 <- model_parameters %>%
-  pivot_longer(c(mu_intercept, mu_mult, sigma_intercept, sigma_mult), names_to = "type", values_to = "vals") %>%
-  filter(type == "mu_mult") %>%
-  ggplot(aes(lead_time, vals)) +
+  ggplot(aes(lead_time, mu_mult)) +
   geom_point() +
   geom_line() +
   geom_smooth(method = lm, se = FALSE, linetype = "dashed", color = "darkred") +
+  geom_ribbon(aes(lead_time, ymin = mu_mult - 2*mu_mult_sd, ymax = mu_mult + 2*mu_mult_sd), alpha = 0.3) +
   theme_classic() +
-  ylab(TeX("$\\beta-t$")) +
+  ylab(TeX("$\\beta_t$")) +
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
   ggtitle(TeX("$\\beta_t$ as a function of lead time")) +
@@ -113,12 +126,11 @@ p2 <- model_parameters %>%
 
 # Visualize parameters: gamma
 p3 <- model_parameters %>%
-  pivot_longer(c(mu_intercept, mu_mult, sigma_intercept, sigma_mult), names_to = "type", values_to = "vals") %>%
-  filter(type == "sigma_intercept") %>%
-  ggplot(aes(lead_time, vals)) +
+  ggplot(aes(lead_time, sigma_intercept)) +
   geom_point() +
   geom_line() +
   geom_smooth(method = lm, se = FALSE, linetype = "dashed", color = "darkred") +
+  geom_ribbon(aes(lead_time, ymin = sigma_intercept - 2*sigma_intercept_sd, ymax = sigma_intercept + 2*sigma_intercept_sd), alpha = 0.3) +
   theme_classic() +
   ylab(TeX("$\\gamma_t$")) +
   xlab("Lead time (hours)") +
@@ -128,12 +140,11 @@ p3 <- model_parameters %>%
 
 # Visualize parameters: delta
 p4 <- model_parameters %>%
-  pivot_longer(c(mu_intercept, mu_mult, sigma_intercept, sigma_mult), names_to = "type", values_to = "vals") %>%
-  filter(type == "sigma_mult") %>%
-  ggplot(aes(lead_time, vals)) +
+  ggplot(aes(lead_time, sigma_mult)) +
   geom_point() +
   geom_line() +
   geom_smooth(method = lm, se = FALSE, linetype = "dashed", color = "darkred") +
+  geom_ribbon(aes(lead_time, ymin = sigma_mult - 2*sigma_mult_sd, ymax = sigma_mult + 2*sigma_mult_sd), alpha = 0.3) +
   theme_classic() +
   ylab(TeX("$\\delta_t$")) +
   xlab("Lead time (hours)") +

@@ -132,6 +132,5 @@ crps %>%
   ylab("CRPSS") +
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
-  ggtitle(TeX("CRPSS as a function of lead time for nth model of each time of day")) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
 ggsave("2_generated_plots/2_seasonality_in_model/t2m_crps_score_nth_model_by_tod.png", width = 9, height = 6.5)
