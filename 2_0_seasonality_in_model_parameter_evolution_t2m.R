@@ -78,17 +78,16 @@ for (i in 1:length(lead_times)) {
 
   # Get parameters
   model_parameters$mu_intercept[i] <- coef(fit, "location")["(Intercept)"]
-  model_parameters$mu_intercept_sd[i] <- summary(fit)$coefficients$location[1,2]
+  model_parameters$mu_intercept_sd[i] <- summary(fit)$coefficients$location[1, 2]
 
   model_parameters$mu_mult[i] <- coef(fit, "location")["ensemble_mean"]
-  model_parameters$mu_mult_sd[i] <- summary(fit)$coefficients$location[2,2]
-  
+  model_parameters$mu_mult_sd[i] <- summary(fit)$coefficients$location[2, 2]
+
   model_parameters$sigma_intercept[i] <- coef(fit, "scale")["(Intercept)"]
-  model_parameters$sigma_intercept_sd[i] <- summary(fit)$coefficients$scale[1,2]
-  
+  model_parameters$sigma_intercept_sd[i] <- summary(fit)$coefficients$scale[1, 2]
+
   model_parameters$sigma_mult[i] <- coef(fit, "scale")["log(ensemble_sd)"]
-  model_parameters$sigma_mult_sd[i] <- summary(fit)$coefficients$scale[2,2]
-  
+  model_parameters$sigma_mult_sd[i] <- summary(fit)$coefficients$scale[2, 2]
 }
 
 end <- Sys.time()
@@ -102,7 +101,7 @@ p1 <- model_parameters %>%
   geom_point() +
   geom_line() +
   geom_smooth(method = lm, se = FALSE, linetype = "dashed", color = "darkred") +
-  geom_ribbon(aes(lead_time, ymin = mu_intercept - 2*mu_intercept_sd, ymax = mu_intercept + 2*mu_intercept_sd), alpha = 0.3) +
+  geom_ribbon(aes(lead_time, ymin = mu_intercept - 2 * mu_intercept_sd, ymax = mu_intercept + 2 * mu_intercept_sd), alpha = 0.3) +
   theme_classic() +
   ylab(TeX("$\\alpha_t$")) +
   xlab("Lead time (hours)") +
@@ -116,7 +115,7 @@ p2 <- model_parameters %>%
   geom_point() +
   geom_line() +
   geom_smooth(method = lm, se = FALSE, linetype = "dashed", color = "darkred") +
-  geom_ribbon(aes(lead_time, ymin = mu_mult - 2*mu_mult_sd, ymax = mu_mult + 2*mu_mult_sd), alpha = 0.3) +
+  geom_ribbon(aes(lead_time, ymin = mu_mult - 2 * mu_mult_sd, ymax = mu_mult + 2 * mu_mult_sd), alpha = 0.3) +
   theme_classic() +
   ylab(TeX("$\\beta_t$")) +
   xlab("Lead time (hours)") +
@@ -130,7 +129,7 @@ p3 <- model_parameters %>%
   geom_point() +
   geom_line() +
   geom_smooth(method = lm, se = FALSE, linetype = "dashed", color = "darkred") +
-  geom_ribbon(aes(lead_time, ymin = sigma_intercept - 2*sigma_intercept_sd, ymax = sigma_intercept + 2*sigma_intercept_sd), alpha = 0.3) +
+  geom_ribbon(aes(lead_time, ymin = sigma_intercept - 2 * sigma_intercept_sd, ymax = sigma_intercept + 2 * sigma_intercept_sd), alpha = 0.3) +
   theme_classic() +
   ylab(TeX("$\\gamma_t$")) +
   xlab("Lead time (hours)") +
@@ -144,7 +143,7 @@ p4 <- model_parameters %>%
   geom_point() +
   geom_line() +
   geom_smooth(method = lm, se = FALSE, linetype = "dashed", color = "darkred") +
-  geom_ribbon(aes(lead_time, ymin = sigma_mult - 2*sigma_mult_sd, ymax = sigma_mult + 2*sigma_mult_sd), alpha = 0.3) +
+  geom_ribbon(aes(lead_time, ymin = sigma_mult - 2 * sigma_mult_sd, ymax = sigma_mult + 2 * sigma_mult_sd), alpha = 0.3) +
   theme_classic() +
   ylab(TeX("$\\delta_t$")) +
   xlab("Lead time (hours)") +
