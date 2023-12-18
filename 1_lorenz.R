@@ -65,7 +65,7 @@ p1 <- parameters %>%
   ylab(TeX("$\\alpha_t$")) +
   xlab("Lead time (days)") +
   ggtitle(TeX("$\\alpha_t$ as a function of lead time")) +
-  theme(axis.text = element_text(size = 11), axis.title = element_text(size = 11), plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 12), plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 
 # Beta
 p2 <- parameters %>%
@@ -77,7 +77,7 @@ p2 <- parameters %>%
   ylab(TeX("$\\beta_t$")) +
   xlab("Lead time (days)") +
   ggtitle(TeX("$\\beta_t$ as a function of lead time")) +
-  theme(axis.text = element_text(size = 11), axis.title = element_text(size = 11), plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 12), plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 
 # Gamma
 p3 <- parameters %>%
@@ -89,7 +89,7 @@ p3 <- parameters %>%
   ylab(TeX("$\\gamma_t$")) +
   xlab("Lead time (days)") +
   ggtitle(TeX("$\\gamma_t$ as a function of lead time")) +
-  theme(axis.text = element_text(size = 11), axis.title = element_text(size = 11), plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 12), plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 
 # Delta
 p4 <- parameters %>%
@@ -101,12 +101,12 @@ p4 <- parameters %>%
   ylab(TeX("$\\delta_t$")) +
   xlab("Lead time (days)") +
   ggtitle(TeX("$\\delta_t$ as a function of lead time")) +
-  theme(axis.text = element_text(size = 11), axis.title = element_text(size = 11), plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 12), plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 
 library("ggpubr")
 
 ggpubr::ggarrange(p1, p2, p3, p4, ncol = 2, nrow = 2)
-ggsave("2_generated_plots/1_lorenz/lorenz_parameters_over_lead_time.png", width = 7, height = 5)
+ggsave("2_generated_plots/1_lorenz/fig2_lorenz_parameters_over_lead_time.png", width = 7, height = 5)
 
 
 # 2. Lead time continuous models ------------------------------------------
@@ -207,6 +207,7 @@ predictions_test <- predictions_separated %>% left_join(
 # Write to file
 write_csv(predictions_test, "1_generated_data/lorenz_predictions_continuous_and_separated_models.csv")
 
+predictions_test <- read_csv("1_generated_data/lorenz_predictions_continuous_and_separated_models.csv")
 
 # Plot CRPS of predictions
 p6 <- predictions_test %>%
@@ -217,9 +218,9 @@ p6 <- predictions_test %>%
   mutate(
     lead_time = lead_time_i / 2,
     type = case_when(
-      type == "CRPS_separated" ~ "Lead time separated",
-      type == "CRPS_continuous_1" ~ "Lead time continuous 1",
-      type == "CRPS_continuous_2" ~ "Lead time continuous 2",
+      type == "CRPS_separated" ~ "Lead-time-separated",
+      type == "CRPS_continuous_1" ~ "Lead-time-continuous 1",
+      type == "CRPS_continuous_2" ~ "Lead-time-continuous 2",
       TRUE ~ NA_character_
     )
   ) %>%
@@ -229,8 +230,9 @@ p6 <- predictions_test %>%
   ylab("CRPS") +
   xlab("Lead time (days)") +
   scale_colour_discrete(name = "EMOS model") +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
-ggsave("2_generated_plots/1_lorenz/lorenz_crps_score_lead_time_continuous_and_separated_models.png", p6, width = 7, height = 5)
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12))
+p6
+ggsave("2_generated_plots/1_lorenz/fig4_lorenz_crps_score_lead_time_continuous_and_separated_models.png", p6, width = 7, height = 5)
 
 
 # Plot PIT histogram
@@ -241,9 +243,9 @@ p7 <- predictions_test %>%
   pivot_longer(starts_with("PIT_"), names_to = "type", values_to = "PIT") %>%
   mutate(
     type = case_when(
-      type == "PIT_separated" ~ "Lead time separated EMOS",
-      type == "PIT_continuous_1" ~ "Lead time continuous EMOS 1",
-      type == "PIT_continuous_2" ~ "Lead time continuous EMOS 2",
+      type == "PIT_separated" ~ "Lead-time-separated EMOS",
+      type == "PIT_continuous_1" ~ "Lead-time-continuous EMOS 1",
+      type == "PIT_continuous_2" ~ "Lead-time-continuous EMOS 2",
       TRUE ~ NA_character_
     )
   ) %>%
@@ -254,9 +256,9 @@ p7 <- predictions_test %>%
   geom_hline(yintercept = 1, linetype = "dashed", color = "red", linewidth = 1.0) +
   facet_wrap(~type) +
   theme_classic() +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5), axis.text.y = element_blank(), axis.ticks.y = element_blank())
+  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5), axis.text.y = element_blank(), axis.ticks.y = element_blank(), strip.text = element_text(size=14))
 p7
-ggsave("2_generated_plots/1_lorenz/lorenz_PIT_lead_time_5.png", p7, width = 10, height = 5)
+ggsave("2_generated_plots/1_lorenz/fig5_lorenz_PIT_lead_time_5.png", p7, width = 10, height = 5)
 
 
 # Get reliability index

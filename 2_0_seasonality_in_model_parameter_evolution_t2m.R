@@ -107,7 +107,7 @@ p1 <- model_parameters %>%
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
   ggtitle(TeX("$\\alpha_t$ as a function of lead time")) +
-  theme(axis.text = element_text(size = 11), axis.title = element_text(size = 11), plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 12), plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 
 # Visualize parameters: beta
 p2 <- model_parameters %>%
@@ -121,7 +121,7 @@ p2 <- model_parameters %>%
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
   ggtitle(TeX("$\\beta_t$ as a function of lead time")) +
-  theme(axis.text = element_text(size = 11), axis.title = element_text(size = 11), plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 12), plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 
 # Visualize parameters: gamma
 p3 <- model_parameters %>%
@@ -135,7 +135,7 @@ p3 <- model_parameters %>%
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
   ggtitle(TeX("$\\gamma_t$ as a function of lead time")) +
-  theme(axis.text = element_text(size = 11), axis.title = element_text(size = 11), plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 12), plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 
 # Visualize parameters: delta
 p4 <- model_parameters %>%
@@ -149,9 +149,9 @@ p4 <- model_parameters %>%
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
   ggtitle(TeX("$\\delta_t$ as a function of lead time")) +
-  theme(axis.text = element_text(size = 11), axis.title = element_text(size = 11), plot.title = element_text(size = 11, hjust = 0.5, face = "bold"))
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 12), plot.title = element_text(size = 14, hjust = 0.5, face = "bold"))
 
 library("ggpubr")
 
 ggpubr::ggarrange(p1, p2, p3, p4, ncol = 2, nrow = 2)
-ggsave("2_generated_plots/2_seasonality_in_model/t2m_parameters_over_lead_time.png", width = 7, height = 5)
+ggsave("2_generated_plots/2_seasonality_in_model/fig3a_t2m_parameters_over_lead_time.png", width = 7, height = 5)

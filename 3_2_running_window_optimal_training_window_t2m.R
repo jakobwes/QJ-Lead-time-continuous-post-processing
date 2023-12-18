@@ -176,17 +176,17 @@ p1 <- results %>%
   summarise(CRPS = mean(CRPS), .groups = "drop") %>%
   filter(training_window_length > 5, model != "Lead time continuous model -- Staggered window") %>%
   mutate(model = case_when(
-    model == "Lead time separated EMOS" ~ "Lead time separated \n(S-RWIN)",
-    model == "Lead time continuous model" ~ "Lead time continuous \n(C-RWIN)",
+    model == "Lead time separated EMOS" ~ "Lead-time-separated \n(S-RWIN)",
+    model == "Lead time continuous model" ~ "Lead-time-continuous \n(C-RWIN)",
     TRUE ~ NA_character_
   )) %>%
   ggplot(aes(training_window_length, CRPS, colour = model)) +
   scale_color_manual(
     name = "EMOS type",
     values = c(
-      "Lead time separated \n(S-RWIN)" = "#000000",
-      "Lead time continuous \n(C-RWIN)" = "#E69F00",
-      "Lead time continuous model -- Staggered window" = "#56B4E9"
+      "Lead-time-separated \n(S-RWIN)" = "#000000",
+      "Lead-time-continuous \n(C-RWIN)" = "#E69F00",
+      "Lead-time-continuous model -- Staggered window" = "#56B4E9"
     )
   ) +
   geom_line() +
@@ -195,9 +195,9 @@ p1 <- results %>%
   ylab("CRPS for 48h predictions") +
   xlab("Training window size") +
   scale_x_continuous(breaks = c(10, 20, 30, 40, 50, 60, 70, 80)) +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14))
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12))
 p1
-ggsave("2_generated_plots/3_running_window/t2m_dependence_on_training_window_size.png", width = 7, height = 5)
+ggsave("2_generated_plots/3_running_window/fig13_t2m_dependence_on_training_window_size.png", width = 7, height = 5)
 
 
 # 3. Not in paper ---------------------------------------------------------

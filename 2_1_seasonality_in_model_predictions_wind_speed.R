@@ -242,25 +242,25 @@ p1 <- predictions %>%
   summarise(CRPS = mean(CRPS), .groups = "drop") %>%
   filter(model %in% c("Lead time separated EMOS", "Lead time continuous model 1")) %>%
   mutate(model = case_when(
-    model == "Lead time continuous model 1" ~ "Lead time continuous \n(C-SWM)",
-    TRUE ~ "Lead time separated \n(S-SWM)"
+    model == "Lead time continuous model 1" ~ "Lead-time-continuous \n(C-SWM)",
+    TRUE ~ "Lead-time-separated \n(S-SWM)"
   )) %>%
   ggplot(aes(lead_time, CRPS, colour = model)) +
   geom_line(linewidth = 1.2) +
-  scale_color_manual(name = "EMOS model", values = c("Lead time separated \n(S-SWM)" = "#000000", "Lead time continuous \n(C-SWM)" = "#E69F00")) +
+  scale_color_manual(name = "EMOS model", values = c("Lead-time-separated \n(S-SWM)" = "#000000", "Lead-time-continuous \n(C-SWM)" = "#E69F00")) +
   theme_classic() +
   ylab("CRPS") +
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12))
 p1
-ggsave("2_generated_plots/2_seasonality_in_model/wind_speed_crps_score_lead_time_continuous_and_separated_models.png", width = 7, height = 5)
+ggsave("2_generated_plots/2_seasonality_in_model/fig6b_wind_speed_crps_score_lead_time_continuous_and_separated_models.png", width = 7, height = 5)
 
 # Plot PIT histogram
 # Note: This only works if an equal amount of PIT values are in either of the two categories, which is the case here.
 p2 <- predictions %>%
   filter(model %in% c("Lead time separated EMOS", "Lead time continuous model 1")) %>%
-  mutate(model = if_else(model == "Lead time continuous model 1", "Lead time continuous (C-SWM)", "Lead time separated (S-SWM)")) %>%
+  mutate(model = if_else(model == "Lead time continuous model 1", "Lead-time-continuous (C-SWM)", "Lead-time-separated (S-SWM)")) %>%
   filter(lead_time == 48) %>%
   ggplot(aes(x = PIT)) +
   geom_histogram(bins = 20, boundary = 0, aes(y = 2 * 20 * after_stat(..count.. / sum(..count..)))) +
@@ -269,9 +269,9 @@ p2 <- predictions %>%
   geom_hline(yintercept = 1, linetype = "dashed", color = "red", linewidth = 1.0) +
   facet_wrap(~model) +
   theme_classic() +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5), axis.text.y = element_blank(), axis.ticks.y = element_blank())
+  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5), axis.text.y = element_blank(), axis.ticks.y = element_blank(), strip.text = element_text(size=14))
 p2
-ggsave("2_generated_plots/2_seasonality_in_model/wind_speed_PIT_lead_time_48.png", width = 10, height = 5)
+ggsave("2_generated_plots/2_seasonality_in_model/fig7b_wind_speed_PIT_lead_time_48.png", width = 10, height = 5)
 
 # Plot reliability index
 get_reliability_index <- function(x) {
@@ -296,8 +296,8 @@ predictions %>%
   geom_errorbar() +
   theme_classic() +
   scale_x_continuous(breaks = 24 * c(0:8)) +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
-  ylab("RI (lead time continuous) - RI(lead time separated)") +
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5)) +
+  ylab("RI (lead-time-continuous) - RI(lead-time-separated)") +
   xlab("Lead time (hours)")
 ggsave("2_generated_plots/2_seasonality_in_model/wind_speed_RI_diff_continuous_and_separated_models.png", width = 10, height = 5)
 

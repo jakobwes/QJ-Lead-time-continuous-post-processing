@@ -86,8 +86,8 @@ results %>%
   ylab("CRPS") +
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
-ggsave("2_generated_plots/4_comparison/crps_combined_t2m.png", width = 7, height = 5)
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12))
+ggsave("2_generated_plots/4_comparison/fig14a_crps_combined_t2m.png", width = 7, height = 5)
 
 # Plot results by location
 results %>%
@@ -332,7 +332,7 @@ results %>%
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
-ggsave("2_generated_plots/4_comparison/crps_combined_wind_speed.png", width = 7, height = 5)
+ggsave("2_generated_plots/4_comparison/fig14b_crps_combined_wind_speed.png", width = 7, height = 5)
 
 # Plot results by location
 results %>%
@@ -396,7 +396,7 @@ results %>%
   theme_classic() +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
   ylab("Energy score")
-ggsave("2_generated_plots/4_comparison/energy_score_wind_speed.png", width = 7, height = 5)
+ggsave("2_generated_plots/4_comparison/fig15a_energy_score_wind_speed.png", width = 7, height = 5)
 
 # Plot p variogram score
 results %>%
@@ -415,7 +415,7 @@ results %>%
   theme_classic() +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
   ylab("p Variogram score (p = 0.5)")
-ggsave("2_generated_plots/4_comparison/p_variogram_score_wind_speed.png", width = 7, height = 5)
+ggsave("2_generated_plots/4_comparison/fig15b_p_variogram_score_wind_speed.png", width = 7, height = 5)
 
 
 # twCRPS
@@ -539,4 +539,4 @@ results_twcrps %>%
   theme_classic() +
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
   xlab("Threshold t (m/s)")
-ggsave("2_generated_plots/4_comparison/twcrps_wind_speed.png", width = 7, height = 5)
+ggsave("2_generated_plots/4_comparison/fig16_twcrps_wind_speed.png", width = 7, height = 5)
