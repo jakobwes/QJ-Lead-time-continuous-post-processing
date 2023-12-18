@@ -132,5 +132,5 @@ crps %>%
   ylab("CRPSS") +
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12), strip.text = element_text(size=14))
+  theme(axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12), strip.text = element_text(size=14))
 ggsave("2_generated_plots/2_seasonality_in_model/fig9_t2m_crps_score_nth_model_by_tod.png", width = 9, height = 6.5)

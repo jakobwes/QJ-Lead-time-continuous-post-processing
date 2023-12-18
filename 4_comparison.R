@@ -145,7 +145,7 @@ results %>%
   scale_fill_manual(name = "EMOS type", values = c("Separated (S-)" = "#ffa300", "Continuous (C-)" = "#0bb4ff")) +
   # geom_line(aes(group = interaction(`Training type`, location)), alpha = 0.5, col = "darkgrey") +
   theme_classic() +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12)) +
   ylab("Energy score")
 ggsave("2_generated_plots/4_comparison/energy_score_t2m.png", width = 7, height = 5)
 
@@ -165,8 +165,8 @@ results %>%
   scale_fill_manual(name = "EMOS type", values = c("Separated (S-)" = "#ffa300", "Continuous (C-)" = "#0bb4ff")) +
   # geom_line(aes(group = interaction(`Training type`, location)), alpha = 0.5, col = "darkgrey") +
   theme_classic() +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
-  ylab("p Variogram score (p = 0.5)")
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12)) +
+  ylab("p-Variogram score (p = 0.5)")
 ggsave("2_generated_plots/4_comparison/p_variogram_score_t2m.png", width = 7, height = 5)
 
 
@@ -331,7 +331,7 @@ results %>%
   ylab("CRPS") +
   xlab("Lead time (hours)") +
   scale_x_continuous(breaks = 24 * c(0:8)) +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5))
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12))
 ggsave("2_generated_plots/4_comparison/fig14b_crps_combined_wind_speed.png", width = 7, height = 5)
 
 # Plot results by location
@@ -394,7 +394,7 @@ results %>%
   geom_boxplot() +
   scale_fill_manual(name = "EMOS type", values = c("Separated (S-)" = "#ffa300", "Continuous (C-)" = "#0bb4ff")) +
   theme_classic() +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12)) +
   ylab("Energy score")
 ggsave("2_generated_plots/4_comparison/fig15a_energy_score_wind_speed.png", width = 7, height = 5)
 
@@ -413,8 +413,8 @@ results %>%
   geom_boxplot() +
   scale_fill_manual(name = "EMOS type", values = c("Separated (S-)" = "#ffa300", "Continuous (C-)" = "#0bb4ff")) +
   theme_classic() +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
-  ylab("p Variogram score (p = 0.5)")
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12)) +
+  ylab("p-Variogram score (p = 0.5)")
 ggsave("2_generated_plots/4_comparison/fig15b_p_variogram_score_wind_speed.png", width = 7, height = 5)
 
 
@@ -537,6 +537,6 @@ results_twcrps %>%
   scale_color_manual(name = "EMOS type", values = c("Separated (S-)" = "#000000", "Continuous (C-)" = "#E69F00")) +
   scale_linetype_manual(name = "Seasonality", values = c("Seasonality in Model (-SWM)" = "solid", "Running window (-RWIN)" = "dotdash")) +
   theme_classic() +
-  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 14), plot.title = element_text(size = 14, hjust = 0.5)) +
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12)) + 
   xlab("Threshold t (m/s)")
 ggsave("2_generated_plots/4_comparison/fig16_twcrps_wind_speed.png", width = 7, height = 5)
