@@ -382,7 +382,7 @@ results %>%
   geom_errorbar() +
   theme_classic() +
   scale_x_continuous(breaks = 24 * c(0:8)) +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12)) +
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12), axis.title.y = element_text(size = 14)) +
   ylab("RI (lead time continuous) - RI(lead time separated)") +
   xlab("Lead time (hours)")
 ggsave("2_generated_plots/3_running_window/fig12_t2m_rolling_window_RI_diff_continuous_and_separated_models.png", width = 10, height = 5)
