@@ -538,5 +538,5 @@ results_twcrps %>%
   scale_linetype_manual(name = "Seasonality", values = c("Seasonality in Model (-SWM)" = "solid", "Running window (-RWIN)" = "dotdash")) +
   theme_classic() +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 16), plot.title = element_text(size = 14, hjust = 0.5), legend.title = element_text(size = 16), legend.text = element_text(size = 12)) + 
-  xlab("Threshold t (m/s)")
+  xlab(TeX("Threshold $\\tau$ (m/s)"))
 ggsave("2_generated_plots/4_comparison/fig16_twcrps_wind_speed.png", width = 7, height = 5)
